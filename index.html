@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Grupolejessna Streaming</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=1470&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+  }
+
+  #overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: -1;
+  }
+
+  #container {
+    background: rgba(10,10,10,0.85);
+    padding: 30px 40px;
+    border-radius: 15px;
+    max-width: 1000px;
+    width: 95%;
+    box-shadow: 0 0 20px rgba(255,255,255,0.15);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 30px;
+    background: linear-gradient(45deg, #f39c12, #d35400, #8e44ad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+    letter-spacing: 3px;
+  }
+
+  .services {
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 35px;
+  }
+
+  .service {
+    background: #222;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    width: 180px;
+    box-shadow: 0 0 12px rgba(255,255,255,0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .service:hover {
+    transform: scale(1.07);
+    box-shadow: 0 0 20px #f39c12;
+  }
+
+  .service img {
+    height: 100px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+
+  .service button {
+    padding: 10px 15px;
+    background-color: #f39c12;
+    border: none;
+    color: #222;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .service button:hover {
+    background-color: #d35400;
+    color: white;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: relative;
+    display: inline-block;
+  }
+
+  .tooltip-text {
+    visibility: hidden;
+    width: 220px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    padding: 10px;
+    border-radius: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.9rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+
+  .tooltip:hover .tooltip-text,
+  .tooltip:active .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  #cart {
+    background: #222;
+    padding: 20px 25px;
+    border-radius: 12px;
+    max-width: 450px;
+    margin: 0 auto;
+    box-shadow: 0 0 15px rgba(255,255,255,0.15);
+  }
+
+  #cart h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #f39c12;
+  }
+
+  #cart ul {
+    list-style-type: none;
+    padding-left: 0;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  #cart ul li {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+  }
+
+  #cart ul li button {
+    background-color: #c0392b;
+    border: none;
+    color: white;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 4px 10px;
+    transition: background-color 0.3s ease;
+  }
+
+  #cart ul li button:hover {
+    background-color: #e74c3c;
+  }
+
+  #total {
+    font-weight: 900;
+    font-size: 1.2rem;
+    margin-top: 15px;
+    color: #f39c12;
+    text-align: right;
+  }
+
+  #sendButton {
+    margin-top: 25px;
+    padding: 12px 28px;
+    font-size: 1.2em;
+    background-color: #25d366;
+    border: none;
+    color: white;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    transition: background-color 0.3s ease;
+  }
+
+  #sendButton:hover {
+    background-color: #128c4a;
+  }
+
+  #paymentMethods {
+    margin-top: 40px;
+    background: #222;
+    padding: 20px 25px;
+    border-radius: 12px;
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 0 15px rgba(255,255,255,0.15);
+    color: white;
+  }
+
+  #paymentMethods h3 {
+    margin-top: 0;
+    text-align: center;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: #f39c12;
+  }
+
+  .payment-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .payment-row img {
+    height: 28px;
+    width: auto;
+    border-radius: 4px;
+  }
+
+  #cart ul::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #cart ul::-webkit-scrollbar-thumb {
+    background-color: #f39c12;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div id="overlay"></div>
+
+<div id="container">
+
+  <h1>Grupolejessna Streaming</h1>
+
+  <div class="services">
+
+    <div class="service">
+      <div class="tooltip">
+        <img src="netflix.png" alt="Netflix" />
+        <span class="tooltip-text"><strong>Netflix:</strong> Películas, series y contenido exclusivo. Disfruta sin anuncios, en cualquier momento y lugar.</span>
+      </div>
+      <button data-name="Netflix" data-price="15000">Pantalla Netflix $15,000</button>
+    </div>
+
+    <div class="service">
+      <div class="tooltip">
+        <img src="disney.png" alt="Disney+" />
+        <span class="tooltip-text"><strong>Disney+:</strong> Todo el contenido de Disney, Marvel, Pixar y Star Wars en un solo lugar.</span>
+      </div>
+      <button data-name="Disney+" data-price="8000">Pantalla Disney+ $8,000</button>
+    </div>
+
+    <div class="service">
+      <div class="tooltip">
+        <img src="amazon.png" alt="Amazon Prime" />
+        <span class="tooltip-text"><strong>Amazon Prime:</strong> Series, películas y contenido exclusivo de Prime Video.</span>
+      </div>
+      <button data-name="Amazon Prime" data-price="12000">Pantalla Amazon Prime $12,000</button>
+    </div>
+
+    <div class="service">
+      <div class="tooltip">
+        <img src="max.png" alt="Max" />
+        <span class="tooltip-text"><strong>Max:</strong> Disfruta contenido de HBO, Warner Bros. y más, todo en una sola plataforma.</span>
+      </div>
+      <button data-name="Max" data-price="8000">Pantalla Max $8,000</button>
+    </div>
+
+    <div class="service">
+      <div class="tooltip">
+        <img src="vix.png" alt="ViX" />
+        <span class="tooltip-text"><strong>ViX:</strong> Series, películas, deportes y noticias en español. Gratis y premium.</span>
+      </div>
+      <button data-name="ViX" data-price="12000">Pantalla ViX $12,000</button>
+    </div>
+
+    <div class="service">
+      <div class="tooltip">
+        <img src="crunchyroll.png" alt="Crunchyroll" />
+        <span class="tooltip-text"><strong>Crunchyroll:</strong> Anime subtitulado y doblado en alta calidad. Nuevos episodios cada semana.</span>
+      </div>
+      <button data-name="Crunchyroll" data-price="12000">Pantalla Crunchyroll $12,000</button>
+    </div>
+
+    <div class="service">
+      <div class="tooltip">
+        <img src="jellyfin.png" alt="Jellyfin" style="height: 80px; object-fit: contain;" />
+        <span class="tooltip-text"><strong>Jellyfin:</strong> Plataforma personal de streaming. Organiza y transmite tu contenido sin límites.</span>
+      </div>
+      <button data-name="Jellyfin" data-price="18000">Pantalla Jellyfin $18,000</button>
+    </div>
+
+  </div>
+
+  <div id="cart">
+    <h2>🛒Carrito de Compras🛒</h2>
+    <ul id="cartItems"></ul>
+    <div id="total">Total: $0 COP</div>
+    <button id="sendButton">Enviar Pedido⤴️</button>
+  </div>
+
+  <div id="paymentMethods">
+    <h3>Medios de pago disponibles:</h3>
+    <div class="payment-row">
+      <img src="nequi.png" alt="Nequi" />
+      <span>Nequi: +57 3146094762</span>
+    </div>
+    <div class="payment-row">
+      <img src="daviplata.png" alt="Daviplata" />
+      <span>Daviplata: +57 3146094762</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const buttons = document.querySelectorAll('.service button');
+  const cartItems = document.getElementById('cartItems');
+  const totalDisplay = document.getElementById('total');
+  const sendButton = document.getElementById('sendButton');
+
+  let cart = [];
+
+  function updateCart() {
+    cartItems.innerHTML = '';
+    let total = 0;
+    cart.forEach((item, index) => {
+      total += item.price;
+      const li = document.createElement('li');
+      li.textContent = `${item.name} - $${item.price.toLocaleString()} COP`;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Eliminar';
+      removeBtn.onclick = () => {
+        cart.splice(index, 1);
+        updateCart();
+      };
+
+      li.appendChild(removeBtn);
+      cartItems.appendChild(li);
+    });
+    totalDisplay.textContent = `Total: $${total.toLocaleString()} COP`;
+  }
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const name = button.getAttribute('data-name');
+      const price = parseInt(button.getAttribute('data-price'), 10);
+      cart.push({ name, price });
+      updateCart();
+    });
+  });
+
+  sendButton.addEventListener('click', () => {
+    if (cart.length === 0) {
+      alert('Por favor, añade al menos un servicio al carrito.');
+      return;
+    }
+
+    let message = 'Hola, quiero realizar el siguiente pedido:%0A';
+    cart.forEach(item => {
+      message += `- ${item.name} por $${item.price.toLocaleString()} COP%0A`;
+    });
+
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    message += `%0ATotal: $${total.toLocaleString()} COP%0A`;
+    message += `%0APara poderle despachar sus servicios, favor adjuntar el comprobante del pago aquí 👇🏼 Gracias.`;
+
+    const phoneNumber = '573146094762';
+    const url = `https://api.whatsapp.com/send?phone=${573146094762}&text=${message}`;
+    window.open(url, '_blank');
+  });
+</script>
+
+</body>
+</html>
